@@ -70,7 +70,7 @@ config-gen: update
 	@echo "TEST_DIR=/root/experiments/" >> Makefile.cosconfig
 
 # default platform is i386
-config: config-i386
+config: config-kvm_hypervisor
 
 config-linux: config-gen
 	@echo "#define COS_PLATFORM LINUX" >> ./kernel/include/shared/cpu_ghz.h
@@ -83,6 +83,12 @@ config-i386: config-gen
 	@echo "#define COS_PLATFORM I386" >> ./kernel/include/shared/cpu_ghz.h
 	@cd kernel/include/ ; rm -f chal ; ln -s ../../platform/i386/chal/ chal
 	@echo "i386" > $(PLAT_FILE)
+
+# override the default linux chal link for hypervisor
+config-kvm_hypervisor: config-gen
+	@echo "#define COS_PLATFORM KVM_HYPERVISOR" >> ./kernel/include/shared/cpu_ghz.h
+	@cd kernel/include/ ; rm -f chal ; ln -s ../../platform/kvm_hypervisor/chal/ chal
+	@echo "kvm_hypervisor" > $(PLAT_FILE)
 
 run:
 ifeq ($(RUNSCRIPT),)

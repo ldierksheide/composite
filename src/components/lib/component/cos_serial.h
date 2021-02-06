@@ -15,10 +15,12 @@ enum cos_serial_ports
 static inline void
 cos_serial_putc(char out)
 {
-	while ((inb(COS_SERIAL_PORT_A + 5) & 0x20) == 0) {
-		/* wait for port to be ready to send */
-	}
-	outb(COS_SERIAL_PORT_A, out);
+	// while ((inb(COS_SERIAL_PORT_A + 5) & 0x20) == 0) {
+	// 	/* wait for port to be ready to send */
+	// }
+	// outb(COS_SERIAL_PORT_A, out);
+	/* hypervisor specific port */
+	outb(0xE8, out);
 }
 
 /* NOTE: can be interleaved & the output could just look like garbage. */
