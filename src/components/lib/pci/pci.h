@@ -52,7 +52,7 @@ struct pci_bar {
 	u32_t mask;
 } __attribute__((packed));
 
-struct cos_pci_device {
+struct pci_dev {
 	u32_t bus, dev, func;
 	u16_t vendor;
 	u16_t device;
@@ -68,14 +68,15 @@ struct cos_pci_device {
 
 /* API */
 
-void cos_pci_scan(void);
-void cos_pci_print(void);
-void *cos_map_phys_to_virt(void *paddr, unsigned int size);
-u32_t cos_pci_read_config(u32_t bus, u32_t dev, u32_t func, u32_t reg);
-void cos_pci_write_config(u32_t bus, u32_t dev, u32_t func, u32_t reg, u32_t v);
-void *cos_map_virt_to_phys(void *addr);
-void *cos_mem_alloc(int size, int type);
-void cos_dpdk_print(char *s, int len);
-void cos_tx_cb(void *userdata);
+int pci_scan(struct pci_dev *devices, int sz);
+void pci_print(struct pci_dev *devices, int sz);
+//void *cos_map_phys_to_virt(void *paddr, unsigned int size);
+u32_t pci_read_config(u32_t bus, u32_t dev, u32_t func, u32_t reg);
+void pci_write_config(u32_t bus, u32_t dev, u32_t func, u32_t reg, u32_t v);
+//void *cos_map_virt_to_phys(void *addr);
+//void *cos_mem_alloc(int size, int type);
+int pci_get_dev(struct pci_dev *devices, int sz, struct pci_dev *dev, u16_t dev_id, u16_t vendor_id);
+
+int pci_num_dev(void);
 
 #endif /* PCI_H */
