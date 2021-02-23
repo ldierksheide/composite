@@ -5,9 +5,7 @@
 void
 cos_init(void)
 {
-	printc("Hello world!\n");
 
-	//while (1) ;
 }
 
 int
@@ -32,7 +30,7 @@ main(void)
 		printc("filling my_dev failed\n");
 	}
 
-	printc("number of devices = %d\n", pci_num_dev());
+	printc("number of devices = %d\n", pci_num());
 
 	while(1);
 	return 0;

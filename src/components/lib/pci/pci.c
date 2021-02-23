@@ -70,7 +70,12 @@ pci_scan(struct pci_dev *devices, int sz)
 				devices[dev_num].subclass  = (u8_t)PCI_SUBCLASS_ID(devices[dev_num].data[2]);
 				devices[dev_num].progIF    = (u8_t)PCI_PROG_IF(devices[dev_num].data[2]);
 				devices[dev_num].header    = (u8_t)PCI_HEADER(devices[dev_num].data[3]);
-				for(k = 0 ; k < PCI_BAR_NUM ; k++) devices[dev_num].bar[k].raw = devices[dev_num].data[4+k];
+				for(k = 0 ; k < PCI_BAR_NUM ; k++) {
+					devices[dev_num].bar[k].raw = devices[dev_num].data[4+k];
+					/* LED: add phys_addr */
+					devices[dev_num].bar[k].phys_addr = devices[dev_num].bar[j].raw & 0xFFFFFFF0;
+
+				}
 				
 				/* not sure about this logic */
 				dev_num++;
@@ -103,7 +108,7 @@ pci_dev_get(struct pci_dev *devices, int sz, struct pci_dev *dev, u16_t dev_id, 
 }
 
 int
-pci_dev_num(void)
+pci_num(void)
 {
 	int i, j, k, f, tmp, dev_num;
 	u32_t reg;

@@ -50,6 +50,8 @@ struct pci_bar {
 		} __attribute__((packed)) mem;
 	};
 	u32_t mask;
+	/* LED: add phys_addr */
+	u64_t phys_addr;
 } __attribute__((packed));
 
 struct pci_dev {
@@ -74,6 +76,6 @@ u32_t pci_config_read(u32_t bus, u32_t dev, u32_t func, u32_t reg);
 void pci_config_write(u32_t bus, u32_t dev, u32_t func, u32_t reg, u32_t v);
 int pci_dev_get(struct pci_dev *devices, int sz, struct pci_dev *dev, u16_t dev_id, u16_t vendor_id);
 
-int pci_dev_num(void);
+int pci_num(void);
 
 #endif /* PCI_H */
