@@ -12,15 +12,16 @@
 //struct pci_dev devices[PCI_DEVICE_NUM];
 
 u32_t
-pci_read_config(u32_t bus, u32_t dev, u32_t func, u32_t reg)
+pci_config_read(u32_t bus, u32_t dev, u32_t func, u32_t reg)
 {
 	u32_t v = PCI_ADDR(bus, dev, func, reg);
 	outl(PCI_CONFIG_ADDRESS, v);
+
 	return inl(PCI_CONFIG_DATA);
 }
 
 void
-pci_write_config(u32_t bus, u32_t dev, u32_t func, u32_t reg, u32_t v)
+pci_config_write(u32_t bus, u32_t dev, u32_t func, u32_t reg, u32_t v)
 {
 	u32_t a = PCI_ADDR(bus, dev, func, reg);
 	outl(PCI_CONFIG_ADDRESS, a);
@@ -31,17 +32,16 @@ pci_write_config(u32_t bus, u32_t dev, u32_t func, u32_t reg, u32_t v)
  * iterate through given array sz times to print device's vendor, device id, and classcode
  */
 void
-pci_print(struct pci_dev *devices, int sz)
+pci_dev_print(struct pci_dev *devices, int sz)
 {
     int i;
-	for(i = 0; i < sz; i++) {
+	for(i = 0 ; i < sz ; i++) {
 	 	printc("%x:%x.%x vendor %x device %x class %x\n", devices[i].bus, devices[i].dev, devices[i].func, devices[i].vendor, devices[i].device, devices[i].classcode);
     }
 }
 
 /* scan through and fill array with devices
- * return 0 when size was large enough to go through everything
- * return 1 when size was not large enough to go through everything
+ * return 0 on success
  * return -1 when sz <= 0
  */
 int
@@ -52,16 +52,15 @@ pci_scan(struct pci_dev *devices, int sz)
 	struct pci_bar *bar;
 
 	dev_num = 0;
+
 	if(sz <= 0) return -1;
 
-	for(i=0; i<PCI_BUS_MAX; i++) {
-		for(j=0; j<PCI_DEVICE_MAX; j++) {
-			for(f=0; f<PCI_FUNC_MAX; f++) {
-				reg = pci_read_config(i, j, f, 0x0);
+	for(i = 0 ; i < PCI_BUS_MAX ; i++) {
+		for(j = 0 ; j < PCI_DEVICE_MAX ; j++) {
+			for(f = 0 ; f < PCI_FUNC_MAX ; f++) {
+				reg = pci_config_read(i, j, f, 0x0);
 				if (reg == PCI_BITMASK_32) continue;
-				
-				for(k=0; k<PCI_DATA_NUM; k++) devices[dev_num].data[k] = pci_read_config(i, j, f, k << 2);
-
+				for(k = 0 ; k < PCI_DATA_NUM ; k++) devices[dev_num].data[k] = pci_config_read(i, j, f, k << 2);
 				devices[dev_num].bus       = (u32_t)i;
 				devices[dev_num].dev       = (u32_t)j;
 				devices[dev_num].func      = (u32_t)f;
@@ -71,31 +70,29 @@ pci_scan(struct pci_dev *devices, int sz)
 				devices[dev_num].subclass  = (u8_t)PCI_SUBCLASS_ID(devices[dev_num].data[2]);
 				devices[dev_num].progIF    = (u8_t)PCI_PROG_IF(devices[dev_num].data[2]);
 				devices[dev_num].header    = (u8_t)PCI_HEADER(devices[dev_num].data[3]);
-				
-				for(k=0; k<PCI_BAR_NUM; k++) devices[dev_num].bar[k].raw = devices[dev_num].data[4+k];
+				for(k = 0 ; k < PCI_BAR_NUM ; k++) devices[dev_num].bar[k].raw = devices[dev_num].data[4+k];
 				
 				/* not sure about this logic */
 				dev_num++;
-				if(dev_num >= sz) {
-					return 1;
+				if(dev_num >= sz || dev_num >= PCI_DEVICE_MAX) {
+					return 0;
 				}
 			}
 		}
 	}
 
 	return 0;
-	
 }
 
 /* 
  * populate pci_dev pointer with device associated with the vendor/device id
  */
 int
-pci_get_dev(struct pci_dev *devices, int sz, struct pci_dev *dev, u16_t dev_id, u16_t vendor_id)
+pci_dev_get(struct pci_dev *devices, int sz, struct pci_dev *dev, u16_t dev_id, u16_t vendor_id)
 {
 	int i;
 
-	for(i = 0; i < sz; i++) {
+	for(i = 0 ; i < sz ; i++) {
 		if(devices[i].vendor == vendor_id && devices[i].device == dev_id) {
 			*dev = devices[i];
 			return 0;
@@ -103,11 +100,10 @@ pci_get_dev(struct pci_dev *devices, int sz, struct pci_dev *dev, u16_t dev_id, 
 	}
 
 	return -1;
-
 }
 
 int
-pci_num_dev(void)
+pci_dev_num(void)
 {
 	int i, j, k, f, tmp, dev_num;
 	u32_t reg;
@@ -115,15 +111,12 @@ pci_num_dev(void)
 
 	dev_num = 0;
 
-	for(i=0; i<PCI_BUS_MAX; i++) {
-		for(j=0; j<PCI_DEVICE_MAX; j++) {
-			for(f=0; f<PCI_FUNC_MAX; f++) {
-				reg = pci_read_config(i, j, f, 0x0);
+	for(i = 0 ; i < PCI_BUS_MAX ; i++) {
+		for(j = 0 ; j < PCI_DEVICE_MAX ; j++) {
+			for(f = 0 ; f < PCI_FUNC_MAX ; f++) {
+				reg = pci_config_read(i, j, f, 0x0);
 				if (reg == PCI_BITMASK_32) continue;
-				
-				/* not sure about this logic */
-				dev_num++;
-
+					dev_num++;
 			}
 		}
 	}

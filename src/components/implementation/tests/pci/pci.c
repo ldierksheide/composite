@@ -14,20 +14,17 @@ int
 main(void)
 {
 	struct pci_dev my_dev;
-
+	int size = 6;
+	struct pci_dev my_devices[size];
 	u16_t dev_id = 0x1237;
 	u16_t vendor_id = 0x8086;
 	int classcode = 6;
-
-	int size = 8;
 	int i;
 
-	struct pci_dev my_devices[size];
-
 	pci_scan(my_devices, size);
-	pci_print(my_devices, size);
+	pci_dev_print(my_devices, size);
 
-	if(pci_get_dev(my_devices, size, &my_dev, dev_id, vendor_id) != 0) {
+	if(pci_dev_get(my_devices, size, &my_dev, dev_id, vendor_id) != 0) {
 		printc("get dev id failed\n");
 	}
 
