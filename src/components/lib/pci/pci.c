@@ -72,8 +72,8 @@ pci_scan(struct pci_dev *devices, int sz)
 				devices[dev_num].header    = (u8_t)PCI_HEADER(devices[dev_num].data[3]);
 				for(k = 0 ; k < PCI_BAR_NUM ; k++) {
 					devices[dev_num].bar[k].raw = devices[dev_num].data[4+k];
-					/* LED: add phys_addr */
-					devices[dev_num].bar[k].phys_addr = devices[dev_num].bar[j].raw & 0xFFFFFFF0;
+					/* LED: add paddr */
+					devices[dev_num].bar[k].paddr = devices[dev_num].bar[j].raw & 0xFFFFFFF0;
 
 				}
 				
