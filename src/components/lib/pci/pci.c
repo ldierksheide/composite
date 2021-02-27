@@ -9,8 +9,6 @@
 #include "pci.h"
 #include <llprint.h>
 
-//struct pci_dev devices[PCI_DEVICE_NUM];
-
 u32_t
 pci_config_read(u32_t bus, u32_t dev, u32_t func, u32_t reg)
 {
@@ -77,7 +75,6 @@ pci_scan(struct pci_dev *devices, int sz)
 
 				}
 				
-				/* not sure about this logic */
 				dev_num++;
 				if(dev_num >= sz || dev_num >= PCI_DEVICE_MAX) {
 					return 0;
